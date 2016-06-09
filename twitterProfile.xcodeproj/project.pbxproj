@@ -12,6 +12,7 @@
 		DEB69EDC1D094C700062405F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DEB69EDA1D094C700062405F /* Main.storyboard */; };
 		DEB69EDE1D094C700062405F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DEB69EDD1D094C700062405F /* Assets.xcassets */; };
 		DEB69EE11D094C700062405F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DEB69EDF1D094C700062405F /* LaunchScreen.storyboard */; };
+		DEC42F751D09581A0071F2EB /* UIImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC42F741D09581A0071F2EB /* UIImageEffects.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,9 @@
 		DEB69EDD1D094C700062405F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DEB69EE01D094C700062405F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DEB69EE21D094C700062405F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DEC42F721D09581A0071F2EB /* twitterProfile-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "twitterProfile-Bridging-Header.h"; sourceTree = "<group>"; };
+		DEC42F731D09581A0071F2EB /* UIImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIImageEffects.h; sourceTree = "<group>"; };
+		DEC42F741D09581A0071F2EB /* UIImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIImageEffects.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +58,7 @@
 		DEB69ED51D094C700062405F /* twitterProfile */ = {
 			isa = PBXGroup;
 			children = (
+				DEC42F711D0957FA0071F2EB /* Library */,
 				DEB69ED61D094C700062405F /* AppDelegate.swift */,
 				DEB69ED81D094C700062405F /* ViewController.swift */,
 				DEB69EDA1D094C700062405F /* Main.storyboard */,
@@ -62,6 +67,16 @@
 				DEB69EE21D094C700062405F /* Info.plist */,
 			);
 			path = twitterProfile;
+			sourceTree = "<group>";
+		};
+		DEC42F711D0957FA0071F2EB /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				DEC42F731D09581A0071F2EB /* UIImageEffects.h */,
+				DEC42F741D09581A0071F2EB /* UIImageEffects.m */,
+				DEC42F721D09581A0071F2EB /* twitterProfile-Bridging-Header.h */,
+			);
+			name = Library;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -138,6 +153,7 @@
 			files = (
 				DEB69ED91D094C700062405F /* ViewController.swift in Sources */,
 				DEB69ED71D094C700062405F /* AppDelegate.swift in Sources */,
+				DEC42F751D09581A0071F2EB /* UIImageEffects.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,11 +266,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = twitterProfile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = in.sweatshop.twitterProfile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "twitterProfile/twitterProfile-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -262,11 +281,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = twitterProfile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = in.sweatshop.twitterProfile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "twitterProfile/twitterProfile-Bridging-Header.h";
 			};
 			name = Release;
 		};
@@ -289,6 +310,7 @@
 				DEB69EE71D094C700062405F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
