@@ -55,6 +55,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         subHeaderView.translatesAutoresizingMaskIntoConstraints = false
         self.tweetTable.tableHeaderView?.insertSubview(subHeaderView, belowSubview: coverImageHeaderView)
         
+        let avatarImageView : UIImageView = self.createAvatarImageView()
+        avatarImageView.translatesAutoresizingMaskIntoConstraints = false
+        self.tweetTable.tableHeaderView?.addSubview(avatarImageView)
+        
+        /*
+         * At this point tableHeader views are ordered like this:
+         * Bottom to top in this order :
+         * 0 : subHeaderView
+         * 1 : headerImageView
+         * 2 : avatarImageView
+         */
+        
+        self.automaticallyAdjustsScrollViewInsets = true
         
     }
 
@@ -129,6 +142,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         view.addConstraints(constraints as! [NSLayoutConstraint])
         
         return view
+    }
+    
+    func createAvatarImageView() -> UIImageView {
+        let avatarView : UIImageView = UIImageView(image: UIImage(named: "Avatar"))
+        avatarView.contentMode = .ScaleToFill
+        avatarView.layer.cornerRadius = 8.0
+        avatarView.layer.borderWidth = 3.0
+        avatarView.layer.borderColor = UIColor.whiteColor().CGColor
+        
+        avatarView.clipsToBounds = true
+        return avatarView
     }
 }
 
