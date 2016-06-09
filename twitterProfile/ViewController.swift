@@ -13,14 +13,49 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     let headerHeight : CGFloat = 100.0
     let subHeaderHeight : CGFloat = 100.0
     let avatarImageSize : CGFloat = 64.0
+    let avatarImageShrinkedSize : CGFloat = 44.0
+    
+    var systemStatusBarHeight : CGFloat = 0.0
+    var systemNavBarHeight : CGFloat = 0.0
+    
+    var headerTriggerOffset : CGFloat = 0.0
+    
+    let isBarCollapsed = false
+    let isBarAnimationComplete = false
+    
+    var coverImageHeaderView : UIImageView = UIImageView()
     
     @IBOutlet weak var tweetTable: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        systemStatusBarHeight = UIApplication.sharedApplication().statusBarFrame.size.height
+        systemNavBarHeight = self.navigationController!.navigationBar.frame.height
+        
+        // minus the component in bracket to compensate the adjusted scroll inset
+        headerTriggerOffset = headerHeight - (systemStatusBarHeight + systemNavBarHeight) - systemStatusBarHeight - systemNavBarHeight
         
         self.tweetTable.dataSource = self
         self.tweetTable.delegate = self
+        self.tweetTable.translatesAutoresizingMaskIntoConstraints = false
+        
+        // minus the component in bracket to compensate the adjusted scroll inset
+        self.tweetTable.tableHeaderView?.frame = CGRectMake(0, 0, self.view.frame.size.width, headerHeight - (systemNavBarHeight + systemStatusBarHeight) + subHeaderHeight)
+        
+        let coverImageView : UIImageView = UIImageView(image: UIImage(named: "Cover"))
+        coverImageView.translatesAutoresizingMaskIntoConstraints = false //auto layout
+        coverImageView.contentMode = .ScaleAspectFill
+        coverImageView.clipsToBounds = true
+        
+        self.coverImageHeaderView = coverImageView
+        
+        self.tweetTable.tableHeaderView?.addSubview(self.coverImageHeaderView)
+        
+        let subHeaderView : UIView = self.createSubHeaderView()
+        subHeaderView.translatesAutoresizingMaskIntoConstraints = false
+        self.tweetTable.tableHeaderView?.insertSubview(subHeaderView, belowSubview: coverImageHeaderView)
+        
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -45,6 +80,55 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
+    }
+    
+    //MARK: - View Controller's graphic related function
+    func createSubHeaderView() -> UIView {
+        let view : UIView = UIView()
+        
+        
+        let followButton = UIButton(type: .RoundedRect)
+        followButton.translatesAutoresizingMaskIntoConstraints = false
+        followButton.setTitle("  Follow  ", forState: .Normal)
+        followButton.layer.cornerRadius = 2
+        followButton.layer.borderWidth = 1
+        followButton.layer.borderColor = UIColor.greenColor().CGColor
+        
+        view.addSubview(followButton)
+        
+        let nameLabel = UILabel()
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        nameLabel.text = "Asriel Dreemurr"
+        nameLabel.numberOfLines = 1
+        nameLabel.font = UIFont.boldSystemFontOfSize(18.0)
+        
+        view.addSubview(nameLabel)
+        
+        
+        let views = ["super" : self.view,
+                     "followButton" : followButton,
+                     "nameLabel" : nameLabel]
+        
+        var constraints = []
+        var format = ""
+        
+        format = "[followButton]-8-|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        view.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        format = "|-8-[nameLabel]"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        view.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        format = "V:|-[followButton]"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        view.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        format = "V:|-60-[nameLabel]";
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        view.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        return view
     }
 }
 
