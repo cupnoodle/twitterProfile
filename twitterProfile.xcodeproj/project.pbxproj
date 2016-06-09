@@ -96,6 +96,7 @@
 				TargetAttributes = {
 					DEB69ED21D094C700062405F = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = HZA79NQ8N6;
 					};
 				};
 			};
@@ -249,6 +250,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = twitterProfile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = in.sweatshop.twitterProfile;
@@ -260,6 +262,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = twitterProfile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = in.sweatshop.twitterProfile;
