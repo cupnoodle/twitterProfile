@@ -10,6 +10,10 @@ import UIKit
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+    let headerHeight : CGFloat = 100.0
+    let subHeaderHeight : CGFloat = 100.0
+    let avatarImageSize : CGFloat = 64.0
+    
     @IBOutlet weak var tweetTable: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
