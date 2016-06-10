@@ -12,7 +12,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     let headerHeight : CGFloat = 100.0
     let subHeaderHeight : CGFloat = 100.0
-    let avatarImageSize : CGFloat = 64.0
+    let avatarImageSize : CGFloat = 70.0
     let avatarImageShrinkedSize : CGFloat = 44.0
     
     var systemStatusBarHeight : CGFloat = 0.0
