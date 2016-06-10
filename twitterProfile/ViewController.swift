@@ -20,15 +20,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var headerTriggerOffset : CGFloat = 0.0
     
-    let isBarCollapsed = false
-    let isBarAnimationComplete = false
+    var isBarCollapsed = false
+    var isBarAnimationComplete = false
     
     var coverImageHeaderView : UIImageView = UIImageView()
+    var originalBackgroundImage : UIImage = UIImage()
+    var customTitleView : UIView = UIView()
     
     @IBOutlet weak var tweetTable: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        self.initializeNavBar()
+        
         systemStatusBarHeight = UIApplication.sharedApplication().statusBarFrame.size.height
         systemNavBarHeight = self.navigationController!.navigationBar.frame.height
         
@@ -41,6 +46,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         // minus the component in bracket to compensate the adjusted scroll inset
         self.tweetTable.tableHeaderView?.frame = CGRectMake(0, 0, self.view.frame.size.width, headerHeight - (systemNavBarHeight + systemStatusBarHeight) + subHeaderHeight)
+        
+        self.originalBackgroundImage = UIImage(named: "Cover")!
         
         let coverImageView : UIImageView = UIImageView(image: UIImage(named: "Cover"))
         coverImageView.translatesAutoresizingMaskIntoConstraints = false //auto layout
@@ -86,14 +93,33 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         var constraint : NSLayoutConstraint = NSLayoutConstraint()
         var format = ""
         
-        // Table view auto layout already set in storyboard
+        // == Table view auto layout already set in storyboard
         
-        // Header image width is same as table view width
+        // == Image header view width is same as table view width
+        
         format = "|-0-[coverImageHeaderView]-0-|"
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: metrics, views: views)
         self.tweetTable.tableHeaderView?.addConstraints(constraints as! [NSLayoutConstraint])
         
-        format = "-0-[]-0-"
+        format = "|-0-[subHeaderView]-0-|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: metrics, views: views)
+        self.tweetTable.tableHeaderView?.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        // == Image header view's height should not be less than navbar, and subHeaderView stay below navbar
+        
+        format = "V:[coverImageHeaderView(>=minHeaderHeight)]-(subHeaderHeight@750)-|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: metrics, views: views)
+        self.view.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        format = "V:|-(headerHeight)-[subHeaderView(subHeaderHeight)]"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: metrics, views: views)
+        self.view.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        // == Image header view should stick on top of the screen
+        
+        let stickyConstraint : NSLayoutConstraint = NSLayoutConstraint(item: coverImageHeaderView, attribute: .Top, relatedBy: .Equal, toItem: self.view, attribute: .Top, multiplier: 1.0, constant: 0.0)
+        self.view.addConstraint(stickyConstraint)
+        
         
         
         
@@ -119,8 +145,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 44
     }
     
     //MARK: - View Controller's graphic related function
@@ -181,6 +207,125 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         avatarView.clipsToBounds = true
         return avatarView
+    }
+    
+    func createTitleView() -> UIView {
+        let handleLabel : UILabel = UILabel()
+        handleLabel.translatesAutoresizingMaskIntoConstraints = false
+        handleLabel.text = "Asriel"
+        handleLabel.numberOfLines = 1
+        handleLabel.textColor = UIColor.whiteColor()
+        handleLabel.font = UIFont.boldSystemFontOfSize(15.0)
+        handleLabel.textAlignment = .Center
+        
+        let tweetCountLabel : UILabel = UILabel()
+        tweetCountLabel.translatesAutoresizingMaskIntoConstraints = false
+        tweetCountLabel.text = "1,000 Tweets"
+        tweetCountLabel.numberOfLines = 1
+        tweetCountLabel.textColor =  UIColor.whiteColor()
+        tweetCountLabel.font = UIFont.boldSystemFontOfSize(10.0)
+        tweetCountLabel.textAlignment = .Center
+        
+        let wrapperView = UIView()
+        wrapperView.addSubview(handleLabel)
+        wrapperView.addSubview(tweetCountLabel)
+        
+        let views = ["handleLabel" : handleLabel,
+                     "tweetCountLabel" : tweetCountLabel]
+        var constraints = []
+        var format = ""
+        
+        format = "|-0-[handleLabel]-0-|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        wrapperView.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        format = "|-0-[tweetCountLabel]-0-|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        wrapperView.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        format = "V:|-0-[handleLabel]-2-[tweetCountLabel]-0-|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: .AlignAllCenterX, metrics: nil, views: views)
+        
+        // set wrapperView frame size, else navbar will treat it as 0 height 0 width
+        wrapperView.frame = CGRectMake(0, 0, max(handleLabel.intrinsicContentSize().width, tweetCountLabel.intrinsicContentSize().width), handleLabel.intrinsicContentSize().height + 2 + tweetCountLabel.intrinsicContentSize().height)
+        
+        wrapperView.clipsToBounds = true
+        
+        return wrapperView
+    }
+    
+    // MARK: - Navigation bar customization
+    
+    func initializeNavBar() {
+        self.view.backgroundColor = UIColor.greenColor()
+        
+        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        self.navigationController?.navigationBar.barStyle = .Black
+        self.navigationController?.navigationBar.translucent = true
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Search, target: self, action: nil)
+        
+        self.switchToExpandedHeader()
+        
+    }
+    
+    func switchToExpandedHeader() {
+        
+        self.navigationController?.navigationBar.translucent = true
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: .Default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        self.navigationItem.titleView = nil
+        
+        self.isBarAnimationComplete = false
+        self.coverImageHeaderView.image = self.originalBackgroundImage
+        
+        /*
+         * At this point tableHeader views are ordered like this:
+         * Bottom to top in this order :
+         * 0 : subHeaderView
+         * 1 : coverImageHeaderView
+         * 2 : avatarImageView
+         */
+        
+        // Inverse Z-Order of avatar and cover image view. i.e : put avatar in front of cover image view
+        self.tweetTable.tableHeaderView?.exchangeSubviewAtIndex(1, withSubviewAtIndex: 2)
+    }
+    
+    func switchToMinifiedHeader() {
+        
+        self.isBarAnimationComplete = false
+        self.navigationItem.titleView = createTitleView()
+        self.navigationController?.navigationBar.clipsToBounds = true
+        
+        //Setting the view transform or changing frame origin has no effect, only this call does
+        self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment(systemNavBarHeight, forBarMetrics: .Default)
+        
+        
+        /*
+         * At this point tableHeader views are ordered like this:
+         * Bottom to top in this order :
+         * 0 : subHeaderView
+         * 1 : coverImageHeaderView
+         * 2 : avatarImageView
+         */
+        
+        // Inverse Z-Order of avatar and cover image view. i.e : put avatar in front of cover image view
+        self.tweetTable.tableHeaderView?.exchangeSubviewAtIndex(1, withSubviewAtIndex: 2)
+    }
+    
+    // MARK: - Scroll view delegate
+    
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        let yPos = scrollView.contentOffset.y
+        
+        if(yPos > headerTriggerOffset && !self.isBarCollapsed){
+            self.switchToMinifiedHeader()
+            self.isBarCollapsed = true
+        }else if(yPos < headerTriggerOffset && isBarCollapsed){
+            self.switchToExpandedHeader()
+            self.isBarCollapsed = false
+        }
     }
 }
 
