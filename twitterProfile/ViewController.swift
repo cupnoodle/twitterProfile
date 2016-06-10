@@ -63,11 +63,39 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
          * At this point tableHeader views are ordered like this:
          * Bottom to top in this order :
          * 0 : subHeaderView
-         * 1 : headerImageView
+         * 1 : coverImageHeaderView
          * 2 : avatarImageView
          */
         
         self.automaticallyAdjustsScrollViewInsets = true
+        
+        /* Auto Layout Settings */
+        
+        // Initialize dictionary of views
+        let views = ["super" : self.view,
+                     "tableView" : self.tweetTable,
+                     "coverImageHeaderView" : self.coverImageHeaderView,
+                     "subHeaderView" : subHeaderView,
+                     "avatarImageView" : avatarImageView]
+        let metrics = ["headerHeight" : headerHeight - (systemNavBarHeight + systemStatusBarHeight),
+                       "minHeaderHeight" : systemStatusBarHeight + systemNavBarHeight,
+                       "subHeaderHeight" : self.subHeaderHeight,
+                       "avatarSize" : avatarImageSize,
+                       "avatarShrinkedSize" : avatarImageShrinkedSize]
+        var constraints = []
+        var constraint : NSLayoutConstraint = NSLayoutConstraint()
+        var format = ""
+        
+        // Table view auto layout already set in storyboard
+        
+        // Header image width is same as table view width
+        format = "|-0-[coverImageHeaderView]-0-|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: metrics, views: views)
+        self.tweetTable.tableHeaderView?.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        format = "-0-[]-0-"
+        
+        
         
     }
 
