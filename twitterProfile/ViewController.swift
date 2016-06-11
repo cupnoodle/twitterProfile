@@ -23,7 +23,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var isBarCollapsed = false
     var isBarAnimationComplete = false
     
-    var blurredImageCache : NSDictionary = NSDictionary()
+    var blurredImageCache : NSMutableDictionary = NSMutableDictionary()
     
     var coverImageHeaderView : UIImageView = UIImageView()
     var originalBackgroundImage : UIImage = UIImage()
@@ -151,14 +151,49 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         self.view.addConstraint(constraint)
  
-        
+        // == Generate blurred image and store it into cache, in background thread so wont obstruct UI
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
+            self.generateBlurredImageCache()
+        })
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+    // MARK: - Scroll view delegate
+    
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        let yPos = scrollView.contentOffset.y
+        
+        if(yPos > headerTriggerOffset && !self.isBarCollapsed){
+            self.switchToMinifiedHeader()
+            self.isBarCollapsed = true
+        }else if(yPos < headerTriggerOffset && isBarCollapsed){
+            self.switchToExpandedHeader()
+            self.isBarCollapsed = false
+        }
+        
+        if(yPos > headerTriggerOffset   && yPos <= headerTriggerOffset + 20.0 + 40.0) {
+            
+            // how much height has scrolled beyond the header trigger
+            let delta : CGFloat = yPos - headerTriggerOffset
+            
+            // adjust navigation bar vertical position
+            self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment((40.0 + 20.0 - delta), forBarMetrics: .Default)
+            
+            self.coverImageHeaderView.image = self.blurredImageAt(delta/60.0)
+            
+        }
+        
+        if(!isBarAnimationComplete && yPos > headerTriggerOffset + 20.0 + 40.0) {
+            self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment(0, forBarMetrics: .Default)
+            self.coverImageHeaderView.image = self.blurredImageAt(1.0)
+            self.isBarAnimationComplete = true
+        }
+    }
+    
     //MARK: - Table View source and delegate
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 20
@@ -343,19 +378,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.tweetTable.tableHeaderView?.exchangeSubviewAtIndex(1, withSubviewAtIndex: 2)
     }
     
-    // MARK: - Scroll view delegate
-    
-    func scrollViewDidScroll(scrollView: UIScrollView) {
-        let yPos = scrollView.contentOffset.y
-        
-        if(yPos > headerTriggerOffset && !self.isBarCollapsed){
-            self.switchToMinifiedHeader()
-            self.isBarCollapsed = true
-        }else if(yPos < headerTriggerOffset && isBarCollapsed){
-            self.switchToExpandedHeader()
-            self.isBarCollapsed = false
-        }
-    }
     
     // MARK: - Blur effects on image
     
@@ -370,6 +392,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         keyNumber = Int(ceil(Double(percent) * 10))
         
+        print("using blur image at key \(keyNumber)")
+        
         let image = self.blurredImageCache.objectForKey(String(keyNumber)) as? UIImage
         
         // return original image if cache haven't generate finish
@@ -382,9 +406,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func generateBlurredImageCache() {
         let maxBlurRadius : CGFloat = 30.0
-        self.blurredImageCache = NSDictionary()
+        self.blurredImageCache = NSMutableDictionary()
         
         for i in 1...10 {
+            print("generating image cache of \(i)")
             self.blurredImageCache.setValue(self.blurredImageOf(self.originalBackgroundImage, withRadius: (maxBlurRadius * CGFloat(i)/10.0)), forKey: String(i))
         }
         
