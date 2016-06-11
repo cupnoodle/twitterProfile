@@ -120,8 +120,34 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let stickyConstraint : NSLayoutConstraint = NSLayoutConstraint(item: coverImageHeaderView, attribute: .Top, relatedBy: .Equal, toItem: self.view, attribute: .Top, multiplier: 1.0, constant: 0.0)
         self.view.addConstraint(stickyConstraint)
         
+        // == Avatar should stick to the left of the screen with default margin
+        format = "|-[avatarImageView]"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: metrics, views: views)
+        self.view.addConstraints(constraints as! [NSLayoutConstraint])
         
+        // == Avatar is square
+        constraint = NSLayoutConstraint(item: avatarImageView, attribute: .Width, relatedBy: .Equal, toItem: avatarImageView, attribute: .Height, multiplier: 1.0, constant: 0.0)
+        self.view.addConstraint(constraint)
         
+        // == Avatar size can between avatar size and avatar shrinked size
+        format = "V:[avatarImageView(<=avatarSize@760,>=avatarShrinkedSize@800)]"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: metrics, views: views)
+        self.view.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        // == Avatar top least distance to main view top
+        // notice the avatar shrinked size has higher priority, it means that once the avatar is shrinked to that size, the avatar top constraint will be violated and avatar will scroll up
+        constraint = NSLayoutConstraint(item: avatarImageView, attribute: .Top, relatedBy: .GreaterThanOrEqual, toItem: self.view, attribute: .Top, multiplier: 1.0, constant: systemStatusBarHeight + systemNavBarHeight)
+        constraint.priority = 790
+        self.view.addConstraint(constraint)
+ 
+        
+        // == Avatar bottom aligned to SubHeader bottom, this has higher precedence to the avatar top constraint
+        
+        constraint = NSLayoutConstraint(item: avatarImageView, attribute: .Bottom, relatedBy: .Equal, toItem: subHeaderView, attribute: .Bottom, multiplier: 1.0, constant: -50)
+        constraint.priority = 801
+        
+        self.view.addConstraint(constraint)
+ 
         
     }
 

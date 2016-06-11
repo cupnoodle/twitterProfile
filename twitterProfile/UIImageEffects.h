@@ -1,4 +1,5 @@
 /*
+ https://developer.apple.com/library/ios/samplecode/UIImageEffects/Listings/UIImageEffects_UIImageEffects_h.html
      File: UIImageEffects.h
  Abstract: This class contains methods to apply blur and tint effects to an image. 
  This is the code you’ll want to look out to find out how to use vImage to 
