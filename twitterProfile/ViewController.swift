@@ -11,8 +11,9 @@ import UIKit
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     let twitterBlueColor : UIColor = UIColor(red: 0.26, green: 0.67, blue: 0.95, alpha: 1.0)
-    let headerHeight : CGFloat = 100.0
-    let subHeaderHeight : CGFloat = 100.0
+    let spacingFromTopToSubHeader : CGFloat = 100.0
+    let headerHeight : CGFloat = 120.0
+    let subHeaderHeight : CGFloat = 200.0
     let avatarImageSize : CGFloat = 70.0
     let avatarImageShrinkedSize : CGFloat = 44.0
     
@@ -149,7 +150,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         // == Avatar bottom aligned to SubHeader bottom, this has higher precedence to the avatar top constraint
         
-        constraint = NSLayoutConstraint(item: avatarImageView, attribute: .Bottom, relatedBy: .Equal, toItem: subHeaderView, attribute: .Bottom, multiplier: 1.0, constant: -50)
+        constraint = NSLayoutConstraint(item: avatarImageView, attribute: .Bottom, relatedBy: .Equal, toItem: subHeaderView, attribute: .Bottom, multiplier: 1.0, constant: -154)
         constraint.priority = 801
         
         self.view.addConstraint(constraint)
@@ -187,7 +188,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         print("scrollview content offset y is \(yPos)")
         // after scroll past this offset, the cover image will start to blur
         // scroll down (more tweets)
-        let blurStartOffset : CGFloat = headerTriggerOffset + 40.0
+        let blurStartOffset : CGFloat = headerTriggerOffset + 32.0
         let blurRange : CGFloat = 60.0
         
         // after scroll past this offset, the cover image will start to blur
@@ -309,25 +310,46 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         let followButton = UIButton(type: .RoundedRect)
         followButton.translatesAutoresizingMaskIntoConstraints = false
-        followButton.setTitle("  Follow  ", forState: .Normal)
-        followButton.layer.cornerRadius = 2
+        followButton.setTitle("  Edit Profile  ", forState: .Normal)
+        followButton.layer.cornerRadius = 4
         followButton.layer.borderWidth = 1
-        followButton.layer.borderColor = UIColor.greenColor().CGColor
-        
+        followButton.layer.borderColor = UIColor.grayColor().CGColor
+        followButton.setTitleColor(UIColor.grayColor(), forState: .Normal)
+        followButton.titleLabel?.font = UIFont.systemFontOfSize(11.0, weight: UIFontWeightMedium)
         view.addSubview(followButton)
         
         let nameLabel = UILabel()
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.text = "Asriel Dreemurr"
         nameLabel.numberOfLines = 1
-        nameLabel.font = UIFont.boldSystemFontOfSize(18.0)
+        nameLabel.font = UIFont.boldSystemFontOfSize(16.0)
+        nameLabel.textAlignment = .Left
+        
+        let handleLabel = UILabel()
+        handleLabel.translatesAutoresizingMaskIntoConstraints = false
+        handleLabel.text = "@asriel"
+        handleLabel.numberOfLines = 1
+        handleLabel.font = UIFont.systemFontOfSize(12.0)
+        handleLabel.textColor = UIColor.grayColor()
+        handleLabel.textAlignment = .Left
+        
+        let descriptionLabel = UILabel()
+        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        descriptionLabel.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam."
+        descriptionLabel.numberOfLines = 0
+        descriptionLabel.font = UIFont.systemFontOfSize(13.0)
+        descriptionLabel.textAlignment = .Left
+        
         
         view.addSubview(nameLabel)
-        
+        view.addSubview(handleLabel)
+        view.addSubview(descriptionLabel)
         
         let views = ["super" : self.view,
                      "followButton" : followButton,
-                     "nameLabel" : nameLabel]
+                     "nameLabel" : nameLabel,
+                     "handleLabel" : handleLabel,
+                     "descriptionLabel": descriptionLabel]
         
         var constraints = []
         var format = ""
@@ -336,7 +358,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
         view.addConstraints(constraints as! [NSLayoutConstraint])
         
-        format = "|-8-[nameLabel]"
+        format = "|-8-[nameLabel]-8-|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        view.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        format = "|-8-[handleLabel]-8-|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        view.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        format = "|-8-[descriptionLabel]-8-|"
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
         view.addConstraints(constraints as! [NSLayoutConstraint])
         
@@ -344,7 +374,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
         view.addConstraints(constraints as! [NSLayoutConstraint])
         
-        format = "V:|-60-[nameLabel]";
+        format = "V:|-54-[nameLabel]-2-[handleLabel]-4-[descriptionLabel]";
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
         view.addConstraints(constraints as! [NSLayoutConstraint])
         
