@@ -77,6 +77,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
          * 2 : avatarImageView
          */
         
+        
+        
         self.automaticallyAdjustsScrollViewInsets = true
         
         /* Auto Layout Settings */
@@ -155,6 +157,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
             self.generateBlurredImageCache()
         })
+        
+        self.customTitleView = self.createTitleView()
+        
+        /*
+        let tmpView = UIView(frame: CGRectMake(0, 0, 300, 30))
+        tmpView.backgroundColor = UIColor.greenColor()
+        
+        
+        self.navigationItem.titleView = self.customTitleView
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        self.navigationController?.navigationBar.clipsToBounds = true
+         */
+ 
     }
 
     override func didReceiveMemoryWarning() {
@@ -167,6 +182,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func scrollViewDidScroll(scrollView: UIScrollView) {
         let yPos = scrollView.contentOffset.y
         
+        // after scroll past this offset, the cover image will start to blur
+        let blurStartOffset : CGFloat = headerTriggerOffset + 40.0
+        let blurRange : CGFloat = 60.0
+        
         if(yPos > headerTriggerOffset && !self.isBarCollapsed){
             self.switchToMinifiedHeader()
             self.isBarCollapsed = true
@@ -175,19 +194,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.isBarCollapsed = false
         }
         
-        if(yPos > headerTriggerOffset   && yPos <= headerTriggerOffset + 20.0 + 40.0) {
+        if(yPos > blurStartOffset   && yPos <= blurStartOffset + blurRange) {
             
             // how much height has scrolled beyond the header trigger
-            let delta : CGFloat = yPos - headerTriggerOffset
+            let delta : CGFloat = yPos - blurStartOffset
             
             // adjust navigation bar vertical position
-            self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment((40.0 + 20.0 - delta), forBarMetrics: .Default)
+            self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment((blurRange - delta), forBarMetrics: .Default)
             
-            self.coverImageHeaderView.image = self.blurredImageAt(delta/60.0)
+            self.coverImageHeaderView.image = self.blurredImageAt(delta/blurRange)
             
         }
         
-        if(!isBarAnimationComplete && yPos > headerTriggerOffset + 20.0 + 40.0) {
+        if(!isBarAnimationComplete && yPos > blurStartOffset + blurRange) {
             self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment(0, forBarMetrics: .Default)
             self.coverImageHeaderView.image = self.blurredImageAt(1.0)
             self.isBarAnimationComplete = true
@@ -212,6 +231,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 44
     }
+    
     
     //MARK: - View Controller's graphic related function
     func createSubHeaderView() -> UIView {
@@ -291,13 +311,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tweetCountLabel.textAlignment = .Center
         
         let wrapperView = UIView()
+        
+        //wrapperView.translatesAutoresizingMaskIntoConstraints = false
         wrapperView.addSubview(handleLabel)
         wrapperView.addSubview(tweetCountLabel)
         
+        
         let views = ["handleLabel" : handleLabel,
-                     "tweetCountLabel" : tweetCountLabel]
+                     "tweetCountLabel" : tweetCountLabel,
+                     "super" : wrapperView]
         var constraints = []
         var format = ""
+        
         
         format = "|-0-[handleLabel]-0-|"
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
@@ -308,12 +333,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         wrapperView.addConstraints(constraints as! [NSLayoutConstraint])
         
         format = "V:|-0-[handleLabel]-2-[tweetCountLabel]-0-|"
-        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: .AlignAllCenterX, metrics: nil, views: views)
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        wrapperView.addConstraints(constraints as! [NSLayoutConstraint])
         
         // set wrapperView frame size, else navbar will treat it as 0 height 0 width
         wrapperView.frame = CGRectMake(0, 0, max(handleLabel.intrinsicContentSize().width, tweetCountLabel.intrinsicContentSize().width), handleLabel.intrinsicContentSize().height + 2 + tweetCountLabel.intrinsicContentSize().height)
         
         wrapperView.clipsToBounds = true
+        print("wrapper view height is \(wrapperView.frame.size.height)")
+        print("wrapper view width is \(wrapperView.frame.size.width)")
+        //self.customTitleView = wrapperView
         
         return wrapperView
     }
@@ -324,7 +353,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.view.backgroundColor = UIColor.greenColor()
         
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
-        self.navigationController?.navigationBar.barStyle = .Black
+        self.navigationController?.navigationBar.barStyle = .BlackTranslucent
         self.navigationController?.navigationBar.translucent = true
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Search, target: self, action: nil)
@@ -334,6 +363,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func switchToExpandedHeader() {
+        print("switching to expanded header")
         
         self.navigationController?.navigationBar.translucent = true
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: .Default)
@@ -358,12 +388,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func switchToMinifiedHeader() {
         
+        print("switching to minified header")
         self.isBarAnimationComplete = false
-        self.navigationItem.titleView = createTitleView()
+        self.navigationItem.titleView = self.customTitleView
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
         self.navigationController?.navigationBar.clipsToBounds = true
+        //self.createTitleView()
+        
+        
         
         //Setting the view transform or changing frame origin has no effect, only this call does
-        self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment(systemNavBarHeight, forBarMetrics: .Default)
+        self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment(60.0, forBarMetrics: .Default)
         
         
         /*
@@ -392,7 +427,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         keyNumber = Int(ceil(Double(percent) * 10))
         
-        print("using blur image at key \(keyNumber)")
+        //print("using blur image at key \(keyNumber)")
         
         let image = self.blurredImageCache.objectForKey(String(keyNumber)) as? UIImage
         
@@ -409,7 +444,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.blurredImageCache = NSMutableDictionary()
         
         for i in 1...10 {
-            print("generating image cache of \(i)")
+            //print("generating image cache of \(i)")
             self.blurredImageCache.setValue(self.blurredImageOf(self.originalBackgroundImage, withRadius: (maxBlurRadius * CGFloat(i)/10.0)), forKey: String(i))
         }
         
