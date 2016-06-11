@@ -10,6 +10,7 @@ import UIKit
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+    let twitterBlueColor : UIColor = UIColor(red: 0.26, green: 0.67, blue: 0.95, alpha: 1.0)
     let headerHeight : CGFloat = 100.0
     let subHeaderHeight : CGFloat = 100.0
     let avatarImageSize : CGFloat = 70.0
@@ -254,7 +255,52 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 44
     }
-    
+    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let sectionView : UIView = UIView()
+        sectionView.backgroundColor = UIColor.whiteColor()
+        
+        let items = ["Tweets", "Media", "Likes"]
+        
+        let segmentedControl : UISegmentedControl = UISegmentedControl(items: items)
+        segmentedControl.tintColor = twitterBlueColor
+        segmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        
+        let separatorView : UIView = UIView()
+        separatorView.translatesAutoresizingMaskIntoConstraints = false
+        separatorView.backgroundColor = UIColor.lightGrayColor()
+        
+        sectionView.addSubview(segmentedControl)
+        sectionView.addSubview(separatorView)
+        
+        let views = ["super" : self.view,
+                     "segmentedControlView" : segmentedControl,
+                     "separatorView" : separatorView]
+        
+        var format = ""
+        var constraints = []
+        var constraint : NSLayoutConstraint = NSLayoutConstraint()
+        
+        // horizontal and vertical center the segmented control
+        
+        format = "|-[segmentedControlView]-|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        sectionView.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        
+        constraint = NSLayoutConstraint(item: segmentedControl, attribute: .CenterY, relatedBy: .Equal, toItem: sectionView, attribute: .CenterY, multiplier: 1.0, constant: 0.0)
+        sectionView.addConstraint(constraint)
+        
+        // let separator width equal super view width, and set it to align bottom
+        format = "|-0-[separatorView]-0-|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        sectionView.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        format = "V:[separatorView(0.5)]-0-|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        sectionView.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        return sectionView
+    }
     
     //MARK: - View Controller's graphic related function
     func createSubHeaderView() -> UIView {
