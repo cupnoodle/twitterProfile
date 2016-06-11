@@ -182,9 +182,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func scrollViewDidScroll(scrollView: UIScrollView) {
         let yPos = scrollView.contentOffset.y
         
+        
+        print("scrollview content offset y is \(yPos)")
         // after scroll past this offset, the cover image will start to blur
+        // scroll down (more tweets)
         let blurStartOffset : CGFloat = headerTriggerOffset + 40.0
         let blurRange : CGFloat = 60.0
+        
+        // after scroll past this offset, the cover image will start to blur
+        // scroll up (pull to refresh)
+        let negativeBlurStartOffset : CGFloat = -(systemStatusBarHeight + systemNavBarHeight + 10.0)
+        let negativeBlurRange : CGFloat = 40.0
         
         if(yPos > headerTriggerOffset && !self.isBarCollapsed){
             self.switchToMinifiedHeader()
@@ -203,13 +211,28 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment((blurRange - delta), forBarMetrics: .Default)
             
             self.coverImageHeaderView.image = self.blurredImageAt(delta/blurRange)
-            
         }
         
         if(!isBarAnimationComplete && yPos > blurStartOffset + blurRange) {
             self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment(0, forBarMetrics: .Default)
             self.coverImageHeaderView.image = self.blurredImageAt(1.0)
             self.isBarAnimationComplete = true
+        }
+        
+        
+        if(yPos < negativeBlurStartOffset && yPos >= negativeBlurStartOffset - negativeBlurRange) {
+            // how much height has scrolled beyond the header trigger
+            
+            // negativeBlurStartOffset = - 64
+            // ypos = -74
+            // negativeBlurRange = 30
+            
+            let delta : CGFloat = negativeBlurStartOffset - yPos
+            self.coverImageHeaderView.image = self.blurredImageAt(delta/negativeBlurRange)
+        }
+        
+        if(yPos < negativeBlurStartOffset - negativeBlurRange) {
+            self.coverImageHeaderView.image = self.blurredImageAt(1.0)
         }
     }
     
@@ -425,7 +448,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         //percent is between 0 to 1
         var keyNumber : Int = 0
         
-        keyNumber = Int(ceil(Double(percent) * 10))
+        keyNumber = Int(floor(Double(percent) * 10))
         
         //print("using blur image at key \(keyNumber)")
         
