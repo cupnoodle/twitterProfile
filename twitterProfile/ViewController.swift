@@ -23,9 +23,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var isBarCollapsed = false
     var isBarAnimationComplete = false
     
+    var blurredImageCache : NSDictionary = NSDictionary()
+    
     var coverImageHeaderView : UIImageView = UIImageView()
     var originalBackgroundImage : UIImage = UIImage()
     var customTitleView : UIView = UIView()
+    
     
     @IBOutlet weak var tweetTable: UITableView!
     override func viewDidLoad() {
@@ -353,5 +356,40 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.isBarCollapsed = false
         }
     }
+    
+    // MARK: - Blur effects on image
+    
+    func blurredImageOf(image: UIImage, withRadius radius: CGFloat) -> UIImage {
+        return UIImageEffects.imageByApplyingBlurToImage(image, withRadius: radius, tintColor: UIColor.whiteColor().colorWithAlphaComponent(0.2), saturationDeltaFactor: 1.5, maskImage: nil)
+    }
+    
+    func blurredImageAt(percent: CGFloat) -> UIImage{
+        
+        //percent is between 0 to 1
+        var keyNumber : Int = 0
+        
+        keyNumber = Int(ceil(Double(percent) * 10))
+        
+        let image = self.blurredImageCache.objectForKey(String(keyNumber)) as? UIImage
+        
+        // return original image if cache haven't generate finish
+        if(image == nil){
+            return self.originalBackgroundImage
+        }
+        
+        return image!
+    }
+    
+    func generateBlurredImageCache() {
+        let maxBlurRadius : CGFloat = 30.0
+        self.blurredImageCache = NSDictionary()
+        
+        for i in 1...10 {
+            self.blurredImageCache.setValue(self.blurredImageOf(self.originalBackgroundImage, withRadius: (maxBlurRadius * CGFloat(i)/10.0)), forKey: String(i))
+        }
+        
+        
+    }
+    
 }
 
