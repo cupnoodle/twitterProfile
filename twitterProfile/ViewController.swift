@@ -10,10 +10,12 @@ import UIKit
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+    let descriptionText : String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam."
+    
     let twitterBlueColor : UIColor = UIColor(red: 0.26, green: 0.67, blue: 0.95, alpha: 1.0)
     let spacingFromTopToSubHeader : CGFloat = 100.0
     let headerHeight : CGFloat = 120.0
-    let subHeaderHeight : CGFloat = 200.0
+    var subHeaderHeight : CGFloat = 150.0
     let avatarImageSize : CGFloat = 70.0
     let avatarImageShrinkedSize : CGFloat = 44.0
     
@@ -38,6 +40,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Do any additional setup after loading the view, typically from a nib.
         
         self.initializeNavBar()
+        subHeaderHeight += self.calcHeightOfDescriptionLabel(descriptionText)
         
         systemStatusBarHeight = UIApplication.sharedApplication().statusBarFrame.size.height
         systemNavBarHeight = self.navigationController!.navigationBar.frame.height
@@ -150,7 +153,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         // == Avatar bottom aligned to SubHeader bottom, this has higher precedence to the avatar top constraint
         
-        constraint = NSLayoutConstraint(item: avatarImageView, attribute: .Bottom, relatedBy: .Equal, toItem: subHeaderView, attribute: .Bottom, multiplier: 1.0, constant: -154)
+        constraint = NSLayoutConstraint(item: avatarImageView, attribute: .Bottom, relatedBy: .Equal, toItem: subHeaderView, attribute: .Bottom, multiplier: 1.0, constant: 46.0 - subHeaderHeight)
         constraint.priority = 801
         
         self.view.addConstraint(constraint)
@@ -307,6 +310,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func createSubHeaderView() -> UIView {
         let view : UIView = UIView()
         
+        let iconSize : Int = 12
         
         let followButton = UIButton(type: .RoundedRect)
         followButton.translatesAutoresizingMaskIntoConstraints = false
@@ -335,22 +339,41 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         let descriptionLabel = UILabel()
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        descriptionLabel.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam."
+        descriptionLabel.text = descriptionText
         descriptionLabel.numberOfLines = 0
         descriptionLabel.font = UIFont.systemFontOfSize(13.0)
         descriptionLabel.textAlignment = .Left
         
+        let locationIcon = UIImageView(image: UIImage(named: "Location"))
+        locationIcon.translatesAutoresizingMaskIntoConstraints = false
+        
+        let locationLabel = UILabel()
+        locationLabel.translatesAutoresizingMaskIntoConstraints = false
+        locationLabel.text = "The New Home"
+        locationLabel.numberOfLines = 1
+        locationLabel.font = UIFont.systemFontOfSize(13.0)
+        locationLabel.textAlignment = .Left
+        
+        let linkIcon = UIImageView(image: UIImage(named: "Link"))
+        linkIcon.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(nameLabel)
         view.addSubview(handleLabel)
         view.addSubview(descriptionLabel)
+        view.addSubview(locationIcon)
+        view.addSubview(linkIcon)
+        view.addSubview(locationLabel)
         
         let views = ["super" : self.view,
                      "followButton" : followButton,
                      "nameLabel" : nameLabel,
                      "handleLabel" : handleLabel,
-                     "descriptionLabel": descriptionLabel]
+                     "descriptionLabel": descriptionLabel,
+                     "locationIcon": locationIcon,
+                     "locationLabel": locationLabel,
+                     "linkIcon": linkIcon]
         
+        var constraint = NSLayoutConstraint()
         var constraints = []
         var format = ""
         
@@ -370,11 +393,22 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
         view.addConstraints(constraints as! [NSLayoutConstraint])
         
+        format = "|-10-[locationIcon(\(iconSize))]-6-[locationLabel]|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        view.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        constraint = NSLayoutConstraint(item: locationLabel, attribute: .CenterY, relatedBy: .Equal, toItem: locationIcon, attribute: .CenterY, multiplier: 1.0, constant: 0.0)
+        view.addConstraint(constraint)
+        
+        format = "|-10-[linkIcon(\(iconSize))]|"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        view.addConstraints(constraints as! [NSLayoutConstraint])
+        
         format = "V:|-[followButton]"
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
         view.addConstraints(constraints as! [NSLayoutConstraint])
         
-        format = "V:|-54-[nameLabel]-2-[handleLabel]-4-[descriptionLabel]";
+        format = "V:|-54-[nameLabel]-2-[handleLabel]-4-[descriptionLabel]-10-[locationIcon(\(iconSize))]-10-[linkIcon(\(iconSize))]";
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
         view.addConstraints(constraints as! [NSLayoutConstraint])
         
@@ -444,6 +478,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         //self.customTitleView = wrapperView
         
         return wrapperView
+    }
+    
+    func calcHeightOfDescriptionLabel(descriptionText: String) -> CGFloat {
+        // |-8-[descriptionLabel-8-|
+        return descriptionText.heightWithConstrainedWidth(self.view.frame.size.width - 16.0, font: UIFont.systemFontOfSize(13.0))
     }
     
     // MARK: - Navigation bar customization
