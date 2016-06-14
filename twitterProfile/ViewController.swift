@@ -173,6 +173,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.generateBlurredImageCache()
         })
         
+        // Create a custom title view for the navigation bar
         self.customTitleView = self.createTitleView()
         
         /*
@@ -197,15 +198,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func scrollViewDidScroll(scrollView: UIScrollView) {
         let yPos = scrollView.contentOffset.y
         
-        
         //print("scrollview content offset y is \(yPos)")
+        
         // after scroll past this offset, the cover image will start to blur
         // scroll down (more tweets)
         let blurStartOffset : CGFloat = headerTriggerOffset + 32.0
         let blurRange : CGFloat = 60.0
         
         // after scroll past this offset, the cover image will start to blur
-        // scroll up (pull to refresh)
+        // pull down (pull to refresh)
         let negativeBlurStartOffset : CGFloat = -(systemStatusBarHeight + systemNavBarHeight + 10.0)
         let negativeBlurRange : CGFloat = 40.0
         
@@ -217,6 +218,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.isBarCollapsed = false
         }
         
+        // adjust navbar vertical offset and degree of blurness based on scrolled offset
         if(yPos > blurStartOffset   && yPos <= blurStartOffset + blurRange) {
             
             // how much height has scrolled beyond the header trigger
@@ -228,6 +230,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.coverImageHeaderView.image = self.blurredImageAt(delta/blurRange)
         }
         
+        // if scroll past this offset, the image is fully blurred and the navbar vertical position stays constant
         if(!isBarAnimationComplete && yPos > blurStartOffset + blurRange) {
             self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment(0, forBarMetrics: .Default)
             self.coverImageHeaderView.image = self.blurredImageAt(1.0)
@@ -235,6 +238,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         
         
+        // adjust degree of blurness based on scrolled offset
         if(yPos < negativeBlurStartOffset && yPos >= negativeBlurStartOffset - negativeBlurRange) {
             // how much height has scrolled beyond the header trigger
             
@@ -246,6 +250,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.coverImageHeaderView.image = self.blurredImageAt(delta/negativeBlurRange)
         }
         
+        // if scroll past this offset, the image is fully blurred
         if(yPos < negativeBlurStartOffset - negativeBlurRange) {
             self.coverImageHeaderView.image = self.blurredImageAt(1.0)
         }
@@ -269,7 +274,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 44
     }
+    
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        //customize the header view for rows section
+        
         let sectionView : UIView = UIView()
         sectionView.backgroundColor = UIColor.whiteColor()
         
@@ -549,13 +557,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
         wrapperView.addConstraints(constraints as! [NSLayoutConstraint])
         
-        // set wrapperView frame size, else navbar will treat it as 0 height 0 width
+        // explicitly set wrapperView frame size, else navbar will treat it as 0 height 0 width
         wrapperView.frame = CGRectMake(0, 0, max(handleLabel.intrinsicContentSize().width, tweetCountLabel.intrinsicContentSize().width), handleLabel.intrinsicContentSize().height + 2 + tweetCountLabel.intrinsicContentSize().height)
         
         wrapperView.clipsToBounds = true
         //print("wrapper view height is \(wrapperView.frame.size.height)")
         //print("wrapper view width is \(wrapperView.frame.size.width)")
-        //self.customTitleView = wrapperView
         
         return wrapperView
     }
@@ -574,7 +581,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // MARK: - Navigation bar customization
     
     func initializeNavBar() {
-        self.view.backgroundColor = UIColor.greenColor()
+        self.view.backgroundColor = twitterBlueColor
         
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         self.navigationController?.navigationBar.barStyle = .BlackTranslucent
@@ -602,8 +609,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
          * At this point tableHeader views are ordered like this:
          * Bottom to top in this order :
          * 0 : subHeaderView
-         * 1 : coverImageHeaderView
-         * 2 : avatarImageView
+         * 1 : avatarImageView
+         * 2 : coverImageHeaderView
          */
         
         // Inverse Z-Order of avatar and cover image view. i.e : put avatar in front of cover image view
@@ -621,7 +628,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         
         
-        //Setting the view transform or changing frame origin has no effect, only this call does
+        // Setting the view transform or changing frame origin has no effect, only this call does
+        // Hide the twitter name and tweets count by pushing it below visible area
         self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment(60.0, forBarMetrics: .Default)
         
         
