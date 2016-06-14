@@ -279,6 +279,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         segmentedControl.tintColor = twitterBlueColor
         segmentedControl.translatesAutoresizingMaskIntoConstraints = false
         segmentedControl.selectedSegmentIndex = 0
+        segmentedControl.setTitleTextAttributes([NSFontAttributeName: UIFont.systemFontOfSize(13.0)], forState: .Normal)
         
         let separatorView : UIView = UIView()
         separatorView.translatesAutoresizingMaskIntoConstraints = false
@@ -303,6 +304,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         
         constraint = NSLayoutConstraint(item: segmentedControl, attribute: .CenterY, relatedBy: .Equal, toItem: sectionView, attribute: .CenterY, multiplier: 1.0, constant: 0.0)
+        sectionView.addConstraint(constraint)
+        
+        constraint = NSLayoutConstraint(item: segmentedControl, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: 30.0)
         sectionView.addConstraint(constraint)
         
         // let separator width equal super view width, and set it to align bottom
