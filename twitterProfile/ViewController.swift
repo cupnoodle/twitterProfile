@@ -140,6 +140,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
  
         
         // == Avatar's center X is stick to the left
+        // This is how twitter app behaves, but I feel it is kinda weird lol
         /*
         constraint = NSLayoutConstraint(item: avatarImageView, attribute: .CenterX, relatedBy: .Equal, toItem: self.tweetTable.tableHeaderView, attribute: .Leading, multiplier: 1.0, constant: 48.0)
         self.view.addConstraint(constraint)
