@@ -15,7 +15,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     let twitterBlueColor : UIColor = UIColor(red: 0.26, green: 0.67, blue: 0.95, alpha: 1.0)
     let spacingFromTopToSubHeader : CGFloat = 100.0
     let headerHeight : CGFloat = 120.0
-    var subHeaderHeight : CGFloat = 170.0
+    var subHeaderHeight : CGFloat = 180.0
     let avatarImageSize : CGFloat = 80.0
     let avatarImageShrinkedSize : CGFloat = 44.0
     
@@ -354,10 +354,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         let descriptionLabel = UILabel()
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        descriptionLabel.text = descriptionText
         descriptionLabel.numberOfLines = 0
-        descriptionLabel.font = UIFont.systemFontOfSize(13.0)
+        descriptionLabel.font = UIFont.systemFontOfSize(14.0)
         descriptionLabel.textAlignment = .Left
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 4
+        
+        let attrDescription = NSMutableAttributedString(string: descriptionText)
+        attrDescription.addAttribute(NSParagraphStyleAttributeName, value:paragraphStyle, range:NSMakeRange(0, attrDescription.length))
+        descriptionLabel.attributedText = attrDescription
+        
         
         let locationIcon = UIImageView(image: UIImage(named: "Location"))
         locationIcon.translatesAutoresizingMaskIntoConstraints = false
@@ -385,9 +392,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         followingLabel.translatesAutoresizingMaskIntoConstraints = false
         followingLabel.numberOfLines = 1
         
-        let followingString = NSMutableAttributedString(string: "24", attributes: [NSFontAttributeName : UIFont.boldSystemFontOfSize(12.0), NSForegroundColorAttributeName : UIColor.blackColor()])
+        let followingString = NSMutableAttributedString(string: "24", attributes: [NSFontAttributeName : UIFont.boldSystemFontOfSize(13.0), NSForegroundColorAttributeName : UIColor.blackColor()])
         
-        let followingConst = NSMutableAttributedString(string: " FOLLOWING", attributes: [NSFontAttributeName : UIFont.systemFontOfSize(11.0), NSForegroundColorAttributeName : UIColor.grayColor()])
+        let followingConst = NSMutableAttributedString(string: " FOLLOWING", attributes: [NSFontAttributeName : UIFont.systemFontOfSize(12.0), NSForegroundColorAttributeName : UIColor.grayColor()])
         
         followingString.appendAttributedString(followingConst)
         
@@ -397,9 +404,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         followerLabel.translatesAutoresizingMaskIntoConstraints = false
         followerLabel.numberOfLines = 1
         
-        let followerString = NSMutableAttributedString(string: "1.2M", attributes: [NSFontAttributeName : UIFont.boldSystemFontOfSize(12.0), NSForegroundColorAttributeName : UIColor.blackColor()])
+        let followerString = NSMutableAttributedString(string: "1.2M", attributes: [NSFontAttributeName : UIFont.boldSystemFontOfSize(13.0), NSForegroundColorAttributeName : UIColor.blackColor()])
         
-        let followerConst = NSMutableAttributedString(string: " FOLLOWERS", attributes: [NSFontAttributeName : UIFont.systemFontOfSize(11.0), NSForegroundColorAttributeName : UIColor.grayColor()])
+        let followerConst = NSMutableAttributedString(string: " FOLLOWERS", attributes: [NSFontAttributeName : UIFont.systemFontOfSize(12.0), NSForegroundColorAttributeName : UIColor.grayColor()])
         
         followerString.appendAttributedString(followerConst)
         
@@ -555,7 +562,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func calcHeightOfDescriptionLabel(descriptionText: String) -> CGFloat {
         // |-8-[descriptionLabel-8-|
-        return descriptionText.heightWithConstrainedWidth(self.view.frame.size.width - 16.0, font: UIFont.systemFontOfSize(13.0))
+        return descriptionText.heightWithConstrainedWidth(self.view.frame.size.width - 16.0, font: UIFont.systemFontOfSize(14.0))
     }
     
     // MARK: - Controller private action
