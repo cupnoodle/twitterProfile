@@ -10,13 +10,13 @@ import UIKit
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
-    let descriptionText : String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam."
+    let descriptionText : String = "Don't worry about me. Someone has to take care of these flowers. Don’t kill, and don’t be killed, alright? That’s the best you can strive for. "
     
     let twitterBlueColor : UIColor = UIColor(red: 0.26, green: 0.67, blue: 0.95, alpha: 1.0)
     let spacingFromTopToSubHeader : CGFloat = 100.0
     let headerHeight : CGFloat = 120.0
     var subHeaderHeight : CGFloat = 170.0
-    let avatarImageSize : CGFloat = 70.0
+    let avatarImageSize : CGFloat = 80.0
     let avatarImageShrinkedSize : CGFloat = 44.0
     
     var systemStatusBarHeight : CGFloat = 0.0
@@ -39,11 +39,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        
         self.initializeNavBar()
         subHeaderHeight += self.calcHeightOfDescriptionLabel(descriptionText)
         
         systemStatusBarHeight = UIApplication.sharedApplication().statusBarFrame.size.height
         systemNavBarHeight = self.navigationController!.navigationBar.frame.height
+        
         
         // minus the component in bracket to compensate the adjusted scroll inset
         headerTriggerOffset = headerHeight - (systemStatusBarHeight + systemNavBarHeight) - systemStatusBarHeight - systemNavBarHeight
@@ -131,9 +133,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.view.addConstraint(stickyConstraint)
         
         // == Avatar should stick to the left of the screen with default margin
+        
         format = "|-[avatarImageView]"
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: metrics, views: views)
         self.view.addConstraints(constraints as! [NSLayoutConstraint])
+ 
+        
+        // == Avatar's center X is stick to the left
+        /*
+        constraint = NSLayoutConstraint(item: avatarImageView, attribute: .CenterX, relatedBy: .Equal, toItem: self.tweetTable.tableHeaderView, attribute: .Leading, multiplier: 1.0, constant: 48.0)
+        self.view.addConstraint(constraint)
+        */
         
         // == Avatar is square
         constraint = NSLayoutConstraint(item: avatarImageView, attribute: .Width, relatedBy: .Equal, toItem: avatarImageView, attribute: .Height, multiplier: 1.0, constant: 0.0)
@@ -188,7 +198,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let yPos = scrollView.contentOffset.y
         
         
-        print("scrollview content offset y is \(yPos)")
+        //print("scrollview content offset y is \(yPos)")
         // after scroll past this offset, the cover image will start to blur
         // scroll down (more tweets)
         let blurStartOffset : CGFloat = headerTriggerOffset + 32.0
@@ -532,8 +542,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         wrapperView.frame = CGRectMake(0, 0, max(handleLabel.intrinsicContentSize().width, tweetCountLabel.intrinsicContentSize().width), handleLabel.intrinsicContentSize().height + 2 + tweetCountLabel.intrinsicContentSize().height)
         
         wrapperView.clipsToBounds = true
-        print("wrapper view height is \(wrapperView.frame.size.height)")
-        print("wrapper view width is \(wrapperView.frame.size.width)")
+        //print("wrapper view height is \(wrapperView.frame.size.height)")
+        //print("wrapper view width is \(wrapperView.frame.size.width)")
         //self.customTitleView = wrapperView
         
         return wrapperView
