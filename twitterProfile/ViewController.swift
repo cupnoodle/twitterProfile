@@ -15,7 +15,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     let twitterBlueColor : UIColor = UIColor(red: 0.26, green: 0.67, blue: 0.95, alpha: 1.0)
     let spacingFromTopToSubHeader : CGFloat = 100.0
     let headerHeight : CGFloat = 120.0
-    var subHeaderHeight : CGFloat = 150.0
+    var subHeaderHeight : CGFloat = 170.0
     let avatarImageSize : CGFloat = 70.0
     let avatarImageShrinkedSize : CGFloat = 44.0
     
@@ -268,6 +268,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let segmentedControl : UISegmentedControl = UISegmentedControl(items: items)
         segmentedControl.tintColor = twitterBlueColor
         segmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        segmentedControl.selectedSegmentIndex = 0
         
         let separatorView : UIView = UIView()
         separatorView.translatesAutoresizingMaskIntoConstraints = false
@@ -320,7 +321,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         followButton.layer.borderColor = UIColor.grayColor().CGColor
         followButton.setTitleColor(UIColor.grayColor(), forState: .Normal)
         followButton.titleLabel?.font = UIFont.systemFontOfSize(11.0, weight: UIFontWeightMedium)
-        view.addSubview(followButton)
+        
         
         let nameLabel = UILabel()
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -352,17 +353,56 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         locationLabel.text = "The New Home"
         locationLabel.numberOfLines = 1
         locationLabel.font = UIFont.systemFontOfSize(13.0)
+        locationLabel.textColor = UIColor.grayColor()
         locationLabel.textAlignment = .Left
         
         let linkIcon = UIImageView(image: UIImage(named: "Link"))
         linkIcon.translatesAutoresizingMaskIntoConstraints = false
         
+        let linkButton = UIButton(type: .System)
+        linkButton.translatesAutoresizingMaskIntoConstraints = false
+        linkButton.setTitle("asriel.xyz", forState: .Normal)
+        linkButton.setTitleColor(twitterBlueColor, forState: .Normal)
+        linkButton.titleLabel?.font = UIFont.systemFontOfSize(13.0)
+        linkButton.titleLabel?.textAlignment = .Left
+        linkButton.addTarget(self, action: #selector(linkButtonTapped), forControlEvents: .TouchUpInside)
+        
+        let followingLabel = UILabel()
+        followingLabel.translatesAutoresizingMaskIntoConstraints = false
+        followingLabel.numberOfLines = 1
+        
+        let followingString = NSMutableAttributedString(string: "24", attributes: [NSFontAttributeName : UIFont.boldSystemFontOfSize(12.0), NSForegroundColorAttributeName : UIColor.blackColor()])
+        
+        let followingConst = NSMutableAttributedString(string: " FOLLOWING", attributes: [NSFontAttributeName : UIFont.systemFontOfSize(11.0), NSForegroundColorAttributeName : UIColor.grayColor()])
+        
+        followingString.appendAttributedString(followingConst)
+        
+        followingLabel.attributedText = followingString
+        
+        let followerLabel = UILabel()
+        followerLabel.translatesAutoresizingMaskIntoConstraints = false
+        followerLabel.numberOfLines = 1
+        
+        let followerString = NSMutableAttributedString(string: "1.2M", attributes: [NSFontAttributeName : UIFont.boldSystemFontOfSize(12.0), NSForegroundColorAttributeName : UIColor.blackColor()])
+        
+        let followerConst = NSMutableAttributedString(string: " FOLLOWERS", attributes: [NSFontAttributeName : UIFont.systemFontOfSize(11.0), NSForegroundColorAttributeName : UIColor.grayColor()])
+        
+        followerString.appendAttributedString(followerConst)
+        
+        followerLabel.attributedText = followerString
+        
+        
+        
+        view.addSubview(followButton)
         view.addSubview(nameLabel)
         view.addSubview(handleLabel)
         view.addSubview(descriptionLabel)
         view.addSubview(locationIcon)
-        view.addSubview(linkIcon)
         view.addSubview(locationLabel)
+        view.addSubview(linkIcon)
+        view.addSubview(linkButton)
+        view.addSubview(followingLabel)
+        view.addSubview(followerLabel)
         
         let views = ["super" : self.view,
                      "followButton" : followButton,
@@ -371,7 +411,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                      "descriptionLabel": descriptionLabel,
                      "locationIcon": locationIcon,
                      "locationLabel": locationLabel,
-                     "linkIcon": linkIcon]
+                     "linkIcon": linkIcon,
+                     "linkButton": linkButton,
+                     "followingLabel": followingLabel,
+                     "followerLabel": followerLabel]
         
         var constraint = NSLayoutConstraint()
         var constraints = []
@@ -393,22 +436,38 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
         view.addConstraints(constraints as! [NSLayoutConstraint])
         
-        format = "|-10-[locationIcon(\(iconSize))]-6-[locationLabel]|"
+        format = "|-10-[locationIcon(\(iconSize))]-6-[locationLabel]"
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
         view.addConstraints(constraints as! [NSLayoutConstraint])
         
         constraint = NSLayoutConstraint(item: locationLabel, attribute: .CenterY, relatedBy: .Equal, toItem: locationIcon, attribute: .CenterY, multiplier: 1.0, constant: 0.0)
         view.addConstraint(constraint)
         
-        format = "|-10-[linkIcon(\(iconSize))]|"
+        format = "|-10-[linkIcon(\(iconSize))]"
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
         view.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        constraint = NSLayoutConstraint(item: linkButton, attribute: .Leading, relatedBy: .Equal, toItem: linkIcon, attribute: .Trailing, multiplier: 1.0, constant: 6.0)
+        view.addConstraint(constraint)
+        
+        constraint = NSLayoutConstraint(item: linkButton, attribute: .CenterY, relatedBy: .Equal, toItem: linkIcon, attribute: .CenterY, multiplier: 1.0, constant: 0.0)
+        view.addConstraint(constraint)
+        
+        format = "|-8-[followingLabel]"
+        constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
+        view.addConstraints(constraints as! [NSLayoutConstraint])
+        
+        constraint = NSLayoutConstraint(item: followerLabel, attribute: .CenterY, relatedBy: .Equal, toItem: followingLabel, attribute: .CenterY, multiplier: 1.0, constant: 0.0)
+        view.addConstraint(constraint)
+        
+        constraint = NSLayoutConstraint(item: followerLabel, attribute: .Leading, relatedBy: .Equal, toItem: followingLabel, attribute: .Trailing, multiplier: 1.0, constant: 20.0)
+        view.addConstraint(constraint)
         
         format = "V:|-[followButton]"
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
         view.addConstraints(constraints as! [NSLayoutConstraint])
         
-        format = "V:|-54-[nameLabel]-2-[handleLabel]-4-[descriptionLabel]-10-[locationIcon(\(iconSize))]-10-[linkIcon(\(iconSize))]";
+        format = "V:|-54-[nameLabel]-2-[handleLabel]-4-[descriptionLabel]-10-[locationIcon(\(iconSize))]-10-[linkIcon(\(iconSize))]-10-[followingLabel]";
         constraints = NSLayoutConstraint.constraintsWithVisualFormat(format, options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: views)
         view.addConstraints(constraints as! [NSLayoutConstraint])
         
@@ -483,6 +542,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func calcHeightOfDescriptionLabel(descriptionText: String) -> CGFloat {
         // |-8-[descriptionLabel-8-|
         return descriptionText.heightWithConstrainedWidth(self.view.frame.size.width - 16.0, font: UIFont.systemFontOfSize(13.0))
+    }
+    
+    // MARK: - Controller private action
+    func linkButtonTapped(sender:UIButton!) {
+        UIApplication.sharedApplication().openURL(NSURL(string: "http://asriel.xyz")!)
+        print("link button tapped!")
     }
     
     // MARK: - Navigation bar customization
